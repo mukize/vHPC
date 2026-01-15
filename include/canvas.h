@@ -6,7 +6,8 @@
 
 typedef struct Canvas {
   Camera2D camera;
-  NodeList nodes;
+  Node* nodes;
+  Vector2 size;
 } Canvas;
 
 void Canvas_Init(Canvas *ws);

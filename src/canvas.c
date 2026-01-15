@@ -1,17 +1,24 @@
 #include "../include/canvas.h"
 #include "../include/node.h"
+#include "../vendor/stb_ds.h"
 #include <assert.h>
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
 #include <stddef.h>
 
+static const float ZOOM_MAX = 1.f;
+static const float ZOOM_MIN = .5f;
+static const float ZOOM_DEFAULT = 1.f;
+static const int GRID_DOT_SIZE = 3;
+static const int GRID_DOT_DELTA = 50;
+
 void Canvas_Init(Canvas *canvas) {
   assert(canvas != NULL);
 
   *canvas = (Canvas){0};
-  canvas->camera.zoom = 1.0f;
-  NodeList_Init(&canvas->nodes);
+  canvas->camera.zoom = ZOOM_DEFAULT;
+  canvas->size = (Vector2){2000, 2000};
 
   return;
 }
@@ -20,19 +27,22 @@ void Canvas_Draw(const Canvas *canvas) {
   assert(canvas != NULL);
 
   BeginMode2D(canvas->camera);
-  // Draw the 3d grid, rotated 90 degrees and centered around 0,0
-  // just so we have something in the XY plane
-  rlPushMatrix();
-  rlTranslatef(0, 25 * 50, 0);
-  rlRotatef(90, 1, 0, 0);
-  DrawGrid(100, 50);
-  rlPopMatrix();
 
-  // Draw a reference circle
-  DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 50, MAROON);
-  for (size_t i = 0; i < canvas->nodes.count; i++) {
-    Node_Draw(&canvas->nodes.items[i]);
+  // Grid
+  for (size_t i = 0; i < canvas->size.x; i += GRID_DOT_DELTA) {
+    for (size_t j = 0; j < canvas->size.y; j += GRID_DOT_DELTA) {
+      Vector2 pos = {i, j};
+      DrawCircleV(pos, GRID_DOT_SIZE, LIGHTGRAY);
+    }
   }
+
+  // Nodes
+  for (size_t i = 0; i < arrlen(canvas->nodes); i++) {
+    Node_Draw(&canvas->nodes[i]);
+  }
+
+  // Center reference
+  DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 50, MAROON);
 
   EndMode2D();
 }
@@ -57,11 +67,13 @@ void Canvas_Update(Canvas *canvas) {
     Node node;
     Node_Init(&node, "test",
               GetScreenToWorld2D(GetMousePosition(), *canvas_camera),
-              (Vector2){100, 100}, RED);
-    NodeList_Push(&canvas->nodes, node);
+              (Vector2){50, 50}, MAROON);
+    arrpush(canvas->nodes, node);
   }
   // ------------------------------------------------------------
 
+  // Handle zooming
+  // ------------------------------------------------------------
   float wheel = GetMouseWheelMove();
   if (wheel != 0) {
     Vector2 mouseWorldPos =
@@ -71,6 +83,7 @@ void Canvas_Update(Canvas *canvas) {
 
     float scale = 0.2f * wheel;
     canvas_camera->zoom =
-        Clamp(expf(logf(canvas_camera->zoom) + scale), 0.125f, 64.0f);
+        Clamp(expf(logf(canvas_camera->zoom) + scale), ZOOM_MIN, ZOOM_MAX);
   }
+  // ------------------------------------------------------------
 }

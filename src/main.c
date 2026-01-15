@@ -6,41 +6,42 @@
 #include <rlgl.h>
 #include <stddef.h>
 
+#define STB_DS_IMPLEMENTATION
+#include "../vendor/stb_ds.h"
+
 static void update(App *app) {
   if (app->canvas != NULL)
     Canvas_Update(app->canvas);
 }
 
 static void draw(App *app) {
-  ClearBackground(WHITE);
+  ClearBackground(RAYWHITE);
 
   if (app->canvas != NULL)
     Canvas_Draw(app->canvas);
 
-  DrawCircleV(GetMousePosition(), 4, DARKGRAY);
-  DrawTextEx(GetFontDefault(), TextFormat("[%i, %i]", GetMouseX(), GetMouseY()),
-             Vector2Add(GetMousePosition(), (Vector2){-44, -24}), 20, 2, BLACK);
-}
+  Vector2 mousePos = GetMousePosition();
+  DrawCircleV(mousePos, 5, GRAY);
 
-static void init(App *app) {
-  assert(app != NULL);
-  app->canvas = &((Canvas){0});
-  Canvas_Init(app->canvas);
+  DrawTextEx(GetFontDefault(), TextFormat("[%i, %i]", GetMouseX(), GetMouseY()),
+             Vector2Add(mousePos, (Vector2){-44, -24}), 20, 2, BLACK);
 }
 
 int main(void) {
 
-  const int screenWidth = 1000;
-  const int screenHeight = 1000;
+  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
 
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-  InitWindow(screenWidth, screenHeight, "vHPC");
+  InitWindow(0, 0, "vHPC");
   SetTargetFPS(60);
 
   App app = {0};
-  init(&app);
+  app.canvas = &((Canvas){0});
+  Canvas_Init(app.canvas);
+
+  ToggleBorderlessWindowed();
 
   while (!WindowShouldClose()) {
+
     update(&app);
 
     BeginDrawing();
