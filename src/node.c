@@ -17,7 +17,10 @@ void Node_Init(Node *node, const char *name, const Vector2 position,
 }
 
 void Node_Draw(const Node *node) {
-  DrawRectangleV(node->position, node->size, node->color);
+  Rectangle rect = {node->position.x, node->position.y, node->size.x,
+                    node->size.y};
+  Vector2 origin = {node->size.x / 2, node->size.y / 2};
+  DrawRectanglePro(rect, origin, 0, node->color);
 };
 
 void Node_Update(Node *node);
