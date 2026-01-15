@@ -1,4 +1,7 @@
-{ stdenv, raylib }:
+{
+  stdenv,
+  raylib,
+}:
 stdenv.mkDerivation {
   name = "vhpc";
   version = "0.1.0";
