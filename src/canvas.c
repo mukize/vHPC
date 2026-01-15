@@ -2,23 +2,28 @@
 #include "../include/node.h"
 #include "../vendor/stb_ds.h"
 #include <assert.h>
+#include <math.h> // Required for floor()
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
 #include <stddef.h>
+#include <stdio.h>
 
 static const float ZOOM_MAX = 1.f;
 static const float ZOOM_MIN = .5f;
-static const float ZOOM_DEFAULT = 1.f;
+static const float ZOOM_DEFAULT = .5f;
+static const Vector2 GRID_SIZE_MAX = {3000, 3000};
+static const Vector2 GRID_SIZE_MIN = {-3000, -3000};
 static const int GRID_DOT_SIZE = 3;
-static const int GRID_DOT_DELTA = 50;
+static const Color GRID_DOT_COLOR = LIGHTGRAY;
+static const int GRID_DOT_SPACING = 50;
 
 void Canvas_Init(Canvas *canvas) {
   assert(canvas != NULL);
 
   *canvas = (Canvas){0};
   canvas->camera.zoom = ZOOM_DEFAULT;
-  canvas->size = (Vector2){2000, 2000};
+  canvas->camera.target = (Vector2){0, 0};
 
   return;
 }
@@ -29,12 +34,24 @@ void Canvas_Draw(const Canvas *canvas) {
   BeginMode2D(canvas->camera);
 
   // Grid
-  for (size_t i = 0; i < canvas->size.x; i += GRID_DOT_DELTA) {
-    for (size_t j = 0; j < canvas->size.y; j += GRID_DOT_DELTA) {
-      Vector2 pos = {i, j};
-      DrawCircleV(pos, GRID_DOT_SIZE, LIGHTGRAY);
+  // ------------------------------------------------------------
+  Vector2 tL = GetScreenToWorld2D((Vector2){0, 0}, canvas->camera);
+  Vector2 bR = GetScreenToWorld2D(
+      (Vector2){GetScreenWidth(), GetScreenHeight()}, canvas->camera);
+
+  float startX = floor(tL.x / GRID_DOT_SPACING) * GRID_DOT_SPACING;
+  float startY = floor(tL.y / GRID_DOT_SPACING) * GRID_DOT_SPACING;
+
+  for (float x = startX; x < bR.x + GRID_DOT_SPACING; x += GRID_DOT_SPACING) {
+    for (float y = startY; y < bR.y + GRID_DOT_SPACING; y += GRID_DOT_SPACING) {
+
+      if (canvas->camera.zoom < 0.1f)
+        continue;
+
+      DrawCircle(x, y, 3, GRID_DOT_COLOR);
     }
   }
+  // ------------------------------------------------------------
 
   // Nodes
   for (size_t i = 0; i < arrlen(canvas->nodes); i++) {
@@ -42,7 +59,7 @@ void Canvas_Draw(const Canvas *canvas) {
   }
 
   // Center reference
-  DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 50, MAROON);
+  DrawCircle(0, 0, 50, MAROON);
 
   EndMode2D();
 }
@@ -55,9 +72,15 @@ void Canvas_Update(Canvas *canvas) {
   // Panning
   // ------------------------------------------------------------
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-    Vector2 delta = GetMouseDelta();
-    delta = Vector2Scale(delta, -1.0f / canvas_camera->zoom);
-    canvas_camera->target = Vector2Add(canvas_camera->target, delta);
+    Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0f / canvas_camera->zoom);
+    Vector2 center = (Vector2){GetScreenWidth() / 2.f, GetScreenHeight() / 2.f};
+    Vector2 newTarget = Vector2Add(canvas_camera->target, delta);
+    Vector2 minTarget = Vector2Add(GRID_SIZE_MIN, center);
+    Vector2 maxTarget = Vector2Subtract(GRID_SIZE_MAX, center);
+    // canvas_camera->target = newTarget;
+    canvas_camera->target = Vector2Clamp(newTarget, minTarget, maxTarget);
+    printf("target: %f, %f\n", canvas_camera->target.x,
+           canvas_camera->target.y);
   }
   // ------------------------------------------------------------
 

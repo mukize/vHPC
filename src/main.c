@@ -38,8 +38,6 @@ int main(void) {
   app.canvas = &((Canvas){0});
   Canvas_Init(app.canvas);
 
-  ToggleBorderlessWindowed();
-
   while (!WindowShouldClose()) {
 
     update(&app);
