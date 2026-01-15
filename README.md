@@ -12,11 +12,11 @@ This is also a learning project for me to learn C and raylib. With that said, ve
 ## To-Do
 
 ### GUI
-- [x] Scrollable workspace
-- [x] Adding shapes to the workspace
-- [ ] Light dotted grid workspace
+- [x] Scrollable canvas
+- [x] Adding shapes to the canvas
+- [ ] Dotted grid canvas
 - [ ] Node textures
-- [ ] Connect "cables" between nodes
+- [ ] "cables" between nodes
 
 ### API
 - [ ] Get node status
