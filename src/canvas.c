@@ -1,4 +1,4 @@
-#include "../include/workspace.h"
+#include "../include/canvas.h"
 #include "../include/node.h"
 #include <assert.h>
 #include <raylib.h>
@@ -6,20 +6,20 @@
 #include <rlgl.h>
 #include <stddef.h>
 
-void Workspace_Init(Workspace *ws) {
-  assert(ws != NULL);
+void Canvas_Init(Canvas *canvas) {
+  assert(canvas != NULL);
 
-  *ws = (Workspace){0};
-  ws->camera.zoom = 1.0f;
-  NodeList_Init(&ws->nodes);
+  *canvas = (Canvas){0};
+  canvas->camera.zoom = 1.0f;
+  NodeList_Init(&canvas->nodes);
 
   return;
 }
 
-void Workspace_Draw(const Workspace *ws) {
-  assert(ws != NULL);
+void Canvas_Draw(const Canvas *canvas) {
+  assert(canvas != NULL);
 
-  BeginMode2D(ws->camera);
+  BeginMode2D(canvas->camera);
   // Draw the 3d grid, rotated 90 degrees and centered around 0,0
   // just so we have something in the XY plane
   rlPushMatrix();
@@ -30,24 +30,24 @@ void Workspace_Draw(const Workspace *ws) {
 
   // Draw a reference circle
   DrawCircle(GetScreenWidth() / 2, GetScreenHeight() / 2, 50, MAROON);
-  for (size_t i = 0; i < ws->nodes.count; i++) {
-    Node_Draw(&ws->nodes.items[i]);
+  for (size_t i = 0; i < canvas->nodes.count; i++) {
+    Node_Draw(&canvas->nodes.items[i]);
   }
 
   EndMode2D();
 }
 
-void Workspace_Update(Workspace *ws) {
-  assert(ws != NULL);
+void Canvas_Update(Canvas *canvas) {
+  assert(canvas != NULL);
 
-  Camera2D *ws_camera = &ws->camera;
+  Camera2D *canvas_camera = &canvas->camera;
 
   // Panning
   // ------------------------------------------------------------
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     Vector2 delta = GetMouseDelta();
-    delta = Vector2Scale(delta, -1.0f / ws_camera->zoom);
-    ws_camera->target = Vector2Add(ws_camera->target, delta);
+    delta = Vector2Scale(delta, -1.0f / canvas_camera->zoom);
+    canvas_camera->target = Vector2Add(canvas_camera->target, delta);
   }
   // ------------------------------------------------------------
 
@@ -55,19 +55,22 @@ void Workspace_Update(Workspace *ws) {
   // ------------------------------------------------------------
   if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
     Node node;
-    Node_Init(&node, "test", GetScreenToWorld2D(GetMousePosition(), *ws_camera),
+    Node_Init(&node, "test",
+              GetScreenToWorld2D(GetMousePosition(), *canvas_camera),
               (Vector2){100, 100}, RED);
-    NodeList_Push(&ws->nodes, node);
+    NodeList_Push(&canvas->nodes, node);
   }
   // ------------------------------------------------------------
 
   float wheel = GetMouseWheelMove();
   if (wheel != 0) {
-    Vector2 mouseWorldPos = GetScreenToWorld2D(GetMousePosition(), *ws_camera);
-    ws_camera->offset = GetMousePosition();
-    ws_camera->target = mouseWorldPos;
+    Vector2 mouseWorldPos =
+        GetScreenToWorld2D(GetMousePosition(), *canvas_camera);
+    canvas_camera->offset = GetMousePosition();
+    canvas_camera->target = mouseWorldPos;
 
     float scale = 0.2f * wheel;
-    ws_camera->zoom = Clamp(expf(logf(ws_camera->zoom) + scale), 0.125f, 64.0f);
+    canvas_camera->zoom =
+        Clamp(expf(logf(canvas_camera->zoom) + scale), 0.125f, 64.0f);
   }
 }
