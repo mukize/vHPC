@@ -1,7 +1,32 @@
+#include "../include/app.h"
 #include "../include/canvas.h"
+#include <assert.h>
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
+#include <stddef.h>
+
+static void update(App *app) {
+  if (app->canvas != NULL)
+    Canvas_Update(app->canvas);
+}
+
+static void draw(App *app) {
+  ClearBackground(WHITE);
+
+  if (app->canvas != NULL)
+    Canvas_Draw(app->canvas);
+
+  DrawCircleV(GetMousePosition(), 4, DARKGRAY);
+  DrawTextEx(GetFontDefault(), TextFormat("[%i, %i]", GetMouseX(), GetMouseY()),
+             Vector2Add(GetMousePosition(), (Vector2){-44, -24}), 20, 2, BLACK);
+}
+
+static void init(App *app) {
+  assert(app != NULL);
+  app->canvas = &((Canvas){0});
+  Canvas_Init(app->canvas);
+}
 
 int main(void) {
 
@@ -12,22 +37,15 @@ int main(void) {
   InitWindow(screenWidth, screenHeight, "vHPC");
   SetTargetFPS(60);
 
-  Canvas canvas;
-  Canvas_Init(&canvas);
+  App app = {0};
+  init(&app);
 
   while (!WindowShouldClose()) {
-    Canvas_Update(&canvas);
+    update(&app);
 
     BeginDrawing();
-      ClearBackground(RAYWHITE);
-      Canvas_Draw(&canvas);
-
-      DrawCircleV(GetMousePosition(), 4, DARKGRAY);
-      DrawTextEx(
-          GetFontDefault(), TextFormat("[%i, %i]", GetMouseX(), GetMouseY()),
-          Vector2Add(GetMousePosition(), (Vector2){-44, -24}), 20, 2, BLACK);
+    draw(&app);
     EndDrawing();
-    //----------------------------------------------------------------------------------
   }
 
   CloseWindow();
