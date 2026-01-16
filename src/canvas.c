@@ -23,7 +23,6 @@ void Canvas_Init(Canvas *canvas) {
 
   *canvas = (Canvas){0};
   canvas->camera.zoom = ZOOM_DEFAULT;
-  canvas->camera.target = (Vector2){0, 0};
   canvas->dragNodeIndex = -1;
 
   return;
