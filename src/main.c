@@ -1,4 +1,3 @@
-#include "../include/app.h"
 #include "../include/canvas.h"
 #include <assert.h>
 #include <raylib.h>
@@ -9,45 +8,80 @@
 #define STB_DS_IMPLEMENTATION
 #include "../vendor/stb_ds.h"
 
-static void update(App *app) {
-  if (app->canvas != NULL)
-    Canvas_Update(app->canvas);
+#define CLAY_IMPLEMENTATION
+#include "../vendor/clay/clay.h"
+#include "../vendor/clay/renderers/raylib/clay_renderer_raylib.c"
+
+// Clay
+// ------------------------------------------------------------------
+bool reinitializeClay = false;
+void HandleClayErrors(Clay_ErrorData errorData) {
+  printf("%s", errorData.errorText.chars);
+  if (errorData.errorType == CLAY_ERROR_TYPE_ELEMENTS_CAPACITY_EXCEEDED) {
+    reinitializeClay = true;
+    Clay_SetMaxElementCount(Clay_GetMaxElementCount() * 2);
+  } else if (errorData.errorType ==
+             CLAY_ERROR_TYPE_TEXT_MEASUREMENT_CAPACITY_EXCEEDED) {
+    reinitializeClay = true;
+    Clay_SetMaxMeasureTextCacheWordCount(
+        Clay_GetMaxMeasureTextCacheWordCount() * 2);
+  }
 }
-
-static void draw(App *app) {
-  ClearBackground(RAYWHITE);
-
-  if (app->canvas != NULL)
-    Canvas_Draw(app->canvas);
-
-  Vector2 mousePos = GetMousePosition();
-  DrawCircleV(mousePos, 5, GRAY);
-
-  DrawTextEx(GetFontDefault(), TextFormat("[%i, %i]", GetMouseX(), GetMouseY()),
-             Vector2Add(mousePos, (Vector2){-44, -24}), 20, 2, BLACK);
-}
+// ------------------------------------------------------------------
 
 int main(void) {
 
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
-
-  InitWindow(0, 0, "vHPC");
+  // Initialize clay and raylib
+  // ------------------------------------------------------------------
+  uint64_t totalMemorySize = Clay_MinMemorySize();
+  Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, malloc(totalMemorySize));
+  Clay_Initialize(clayMemory,
+                  (Clay_Dimensions){GetScreenWidth(), GetScreenHeight()},
+                  (Clay_ErrorHandler){HandleClayErrors, 0});
+  Clay_Raylib_Initialize(GetScreenWidth(), GetScreenHeight(),
+                         "Clay - Raylib Renderer Example",
+                         FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
   SetTargetFPS(60);
+  // ------------------------------------------------------------------
 
-  App app = {0};
-  app.canvas = &((Canvas){0});
-  Canvas_Init(app.canvas);
+  // Initialize app state
+  // ------------------------------------------------------------------
+  Canvas canvas = (Canvas){0};
+  Canvas_Init(&canvas);
+  // ------------------------------------------------------------------
 
   while (!WindowShouldClose()) {
 
-    update(&app);
+    // Update
+    // ------------------------------------------------------------------
 
+    // Restart clay if it 
+    if (reinitializeClay) {
+      Clay_SetMaxElementCount(8192);
+      totalMemorySize = Clay_MinMemorySize();
+      clayMemory = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, malloc(totalMemorySize));
+      Clay_Initialize(clayMemory, (Clay_Dimensions) { (float)GetScreenWidth(), (float)GetScreenHeight() }, (Clay_ErrorHandler) { HandleClayErrors, 0 });
+      reinitializeClay = false;
+    }
+
+    // Canvas
+    Canvas_Update(&canvas);
+    // ------------------------------------------------------------------
+
+    // Draw
+    // ------------------------------------------------------------------
     BeginDrawing();
-    draw(&app);
+    ClearBackground(RAYWHITE);
+
+    Canvas_Draw(&canvas);
+
+    Vector2 mousePos = GetMousePosition();
+    DrawCircleV(mousePos, 5, GRAY);
     EndDrawing();
+    // ------------------------------------------------------------------
   }
 
-  CloseWindow();
+  Clay_Raylib_Close();
 
   return 0;
 }
