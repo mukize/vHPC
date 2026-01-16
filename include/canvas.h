@@ -7,6 +7,7 @@
 typedef struct Canvas {
   Camera2D camera;
   Node* nodes;
+  int dragNodeIndex;
 } Canvas;
 
 void Canvas_Init(Canvas *ws);

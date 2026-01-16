@@ -24,6 +24,7 @@ void Canvas_Init(Canvas *canvas) {
   *canvas = (Canvas){0};
   canvas->camera.zoom = ZOOM_DEFAULT;
   canvas->camera.target = (Vector2){0, 0};
+  canvas->dragNodeIndex = -1;
 
   return;
 }
@@ -76,12 +77,43 @@ void Canvas_Update(Canvas *canvas) {
   Vector2 maxTarget = Vector2Subtract(GRID_SIZE_MAX, center);
   // ------------------------------------------------------------
 
+  // Dragging
+  // ------------------------------------------------------------
+  // Toggle that canvas is being dragged
+  if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+    Vector2 mouseWorldPos =
+        GetScreenToWorld2D(GetMousePosition(), *canvas_camera);
+    if (canvas->dragNodeIndex == -1) {
+      for (size_t i = 0; i < arrlen(canvas->nodes); i++) {
+        if (CheckCollisionPointRec(mouseWorldPos, canvas->nodes[i].bounds)) {
+          canvas->dragNodeIndex = i;
+          break;
+        }
+      }
+    }
+  }
+  // Do actual dragging
+  if (canvas->dragNodeIndex != -1) {
+    if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
+      Node *node = &canvas->nodes[canvas->dragNodeIndex];
+      Vector2 dragDelta =
+          Vector2Scale(GetMouseDelta(), 1.0f / canvas_camera->zoom);
+      node->bounds.x += dragDelta.x;
+      node->bounds.y += dragDelta.y;
+    } else
+      canvas->dragNodeIndex = -1;
+  }
+  // ------------------------------------------------------------
+
   // Panning
   // ------------------------------------------------------------
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
-    Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0f / canvas_camera->zoom);
-    Vector2 newTarget = Vector2Add(canvas_camera->target, delta);
-    canvas_camera->target = Vector2Clamp(newTarget, minTarget, maxTarget);
+    if (canvas->dragNodeIndex == -1) {
+      // Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0f /
+      // canvas_camera->zoom); Vector2 newTarget =
+      // Vector2Add(canvas_camera->target, delta); canvas_camera->target =
+      // Vector2Clamp(newTarget, minTarget, maxTarget);
+    }
   }
   // ------------------------------------------------------------
 
@@ -89,9 +121,11 @@ void Canvas_Update(Canvas *canvas) {
   // ------------------------------------------------------------
   if (IsMouseButtonPressed(MOUSE_BUTTON_RIGHT)) {
     Node node;
+    Vector2 mouseWorldPos =
+        GetScreenToWorld2D(GetMousePosition(), *canvas_camera);
+    Vector2 size = (Vector2){50, 50};
     Node_Init(&node, "test",
-              GetScreenToWorld2D(GetMousePosition(), *canvas_camera),
-              (Vector2){50, 50}, MAROON);
+              (Rectangle){mouseWorldPos.x, mouseWorldPos.y, 50, 50});
     arrpush(canvas->nodes, node);
   }
   // ------------------------------------------------------------

@@ -6,12 +6,10 @@
 
 typedef struct {
   char name[255];
-  Vector2 position;
-  Vector2 size;
-  Color color;
+  Rectangle bounds;
 } Node;
 
-void Node_Init(Node *node, const char *name, const Vector2 position, const Vector2 size, const Color color);
+void Node_Init(Node *node, const char *name, Rectangle bounds);
 
 void Node_Draw(const Node *node);
 
