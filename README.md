@@ -12,9 +12,12 @@ This is also a learning project for me to learn C and raylib. With that said, ve
 ## To-Do
 
 ### GUI
+
 - [x] Scrollable canvas
-- [x] Adding shapes to the canvas
-- [ ] Dotted grid canvas
+- [x] Dotted grid canvas
+- [x] Adding items to the canvas
+- [ ] Move items across the canvas
+- [ ] Form prompt
 - [ ] Node textures
 - [ ] "cables" between nodes
 
