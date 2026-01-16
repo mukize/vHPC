@@ -69,18 +69,19 @@ void Canvas_Update(Canvas *canvas) {
 
   Camera2D *canvas_camera = &canvas->camera;
 
+  // Bounding target
+  // ------------------------------------------------------------
+  Vector2 center = (Vector2){GetScreenWidth() / 2.f, GetScreenHeight() / 2.f};
+  Vector2 minTarget = Vector2Add(GRID_SIZE_MIN, center);
+  Vector2 maxTarget = Vector2Subtract(GRID_SIZE_MAX, center);
+  // ------------------------------------------------------------
+
   // Panning
   // ------------------------------------------------------------
   if (IsMouseButtonDown(MOUSE_BUTTON_LEFT)) {
     Vector2 delta = Vector2Scale(GetMouseDelta(), -1.0f / canvas_camera->zoom);
-    Vector2 center = (Vector2){GetScreenWidth() / 2.f, GetScreenHeight() / 2.f};
     Vector2 newTarget = Vector2Add(canvas_camera->target, delta);
-    Vector2 minTarget = Vector2Add(GRID_SIZE_MIN, center);
-    Vector2 maxTarget = Vector2Subtract(GRID_SIZE_MAX, center);
-    // canvas_camera->target = newTarget;
     canvas_camera->target = Vector2Clamp(newTarget, minTarget, maxTarget);
-    printf("target: %f, %f\n", canvas_camera->target.x,
-           canvas_camera->target.y);
   }
   // ------------------------------------------------------------
 
@@ -102,7 +103,7 @@ void Canvas_Update(Canvas *canvas) {
     Vector2 mouseWorldPos =
         GetScreenToWorld2D(GetMousePosition(), *canvas_camera);
     canvas_camera->offset = GetMousePosition();
-    canvas_camera->target = mouseWorldPos;
+    canvas_camera->target = Vector2Clamp(mouseWorldPos, minTarget, maxTarget);
 
     float scale = 0.2f * wheel;
     canvas_camera->zoom =
