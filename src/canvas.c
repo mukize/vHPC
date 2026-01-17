@@ -11,7 +11,7 @@
 
 static const float ZOOM_MAX = 1.f;
 static const float ZOOM_MIN = .5f;
-static const float ZOOM_DEFAULT = .5f;
+static const float ZOOM_DEFAULT = 1.f;
 static const Vector2 GRID_SIZE_MAX = {3000, 3000};
 static const Vector2 GRID_SIZE_MIN = {-3000, -3000};
 static const int GRID_DOT_SIZE = 3;
