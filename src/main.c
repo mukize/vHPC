@@ -48,6 +48,8 @@ int main(void) {
   // ------------------------------------------------------------------
   Canvas canvas = (Canvas){0};
   Canvas_Init(&canvas);
+  Font fonts[1] = { GetFontDefault()};
+  Clay_SetMeasureTextFunction(Raylib_MeasureText, fonts);
   // ------------------------------------------------------------------
 
   while (!WindowShouldClose()) {
