@@ -1,8 +1,9 @@
 #include "../include/canvas.h"
 #include "../include/node.h"
+#include "../include/theme.h"
 #include "../vendor/stb_ds.h"
 #include <assert.h>
-#include <math.h> // Required for floor()
+#include <math.h>
 #include <raylib.h>
 #include <raymath.h>
 #include <rlgl.h>
@@ -15,7 +16,7 @@ static const float ZOOM_DEFAULT = 1.f;
 static const Vector2 GRID_SIZE_MAX = {3000, 3000};
 static const Vector2 GRID_SIZE_MIN = {-3000, -3000};
 static const int GRID_DOT_SIZE = 3;
-static const Color GRID_DOT_COLOR = LIGHTGRAY;
+static const Color GRID_DOT_COLOR = THEME_OVERLAY;
 static const int GRID_DOT_SPACING = 50;
 
 void Canvas_Init(Canvas *canvas) {
@@ -32,6 +33,7 @@ void Canvas_Draw(const Canvas *canvas) {
   assert(canvas != NULL);
 
   BeginMode2D(canvas->camera);
+  ClearBackground(THEME_BASE);
 
   // Grid
   // ------------------------------------------------------------

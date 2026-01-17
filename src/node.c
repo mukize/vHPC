@@ -1,4 +1,5 @@
 #include "../include/node.h"
+#include "../include/theme.h"
 #include <assert.h>
 #include <raylib.h>
 #include <stddef.h>
@@ -14,7 +15,7 @@ void Node_Init(Node *node, const char *name, Rectangle bounds) {
 void Node_Draw(const Node *node) {
   // Icon
   Vector2 origin = {node->bounds.width / 2, node->bounds.height / 2};
-  DrawRectanglePro(node->bounds, origin, 0, MAROON);
+  DrawRectanglePro(node->bounds, origin, 0, THEME_MAUVE);
 
   // Text
   // Font font = GetFontDefault();
