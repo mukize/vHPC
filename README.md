@@ -18,13 +18,12 @@ This is also a learning project for me to learn C and raylib. With that said, ve
 - [x] Dotted grid canvas
 - [x] Adding items to the canvas
 - [x] Move items across the canvas
-
+- [ ] Graduate from shapes to icons
+- [ ] "cables" between nodes
 
 #### UI
 - [ ] Modal
-- [ ] Side bar
-- [ ] Node textures
-- [ ] "cables" between nodes
+- [ ] Sidebar
 
 ### API
 - [ ] Get node status
@@ -32,4 +31,9 @@ This is also a learning project for me to learn C and raylib. With that said, ve
 - [ ] Syncing node state
 - [ ] Storing node state
 - [ ] Managing network
-- [ ] Switches
+
+
+## Bugs
+
+- Wayland, cursor coordinates not aligning with cursor when mouse down and not in full screen mode
+- Wayland (again), scaling issues....
