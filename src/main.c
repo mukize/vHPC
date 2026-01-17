@@ -1,4 +1,6 @@
 #include "../include/canvas.h"
+#include "../include/theme.h"
+#include "../include/ui.h"
 #include <assert.h>
 #include <raylib.h>
 #include <raymath.h>
@@ -34,13 +36,14 @@ int main(void) {
   // Initialize clay and raylib
   // ------------------------------------------------------------------
   uint64_t totalMemorySize = Clay_MinMemorySize();
-  Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, malloc(totalMemorySize));
+  Clay_Arena clayMemory = Clay_CreateArenaWithCapacityAndMemory(
+      totalMemorySize, malloc(totalMemorySize));
   Clay_Initialize(clayMemory,
                   (Clay_Dimensions){GetScreenWidth(), GetScreenHeight()},
                   (Clay_ErrorHandler){HandleClayErrors, 0});
-  Clay_Raylib_Initialize(GetScreenWidth(), GetScreenHeight(),
-                         "Clay - Raylib Renderer Example",
-                         FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED);
+  Clay_Raylib_Initialize(
+      GetScreenWidth(), GetScreenHeight(), "Clay - Raylib Renderer Example",
+      FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_HIGHDPI);
   SetTargetFPS(60);
   // ------------------------------------------------------------------
 
@@ -48,7 +51,9 @@ int main(void) {
   // ------------------------------------------------------------------
   Canvas canvas = (Canvas){0};
   Canvas_Init(&canvas);
-  Font fonts[1] = { GetFontDefault()};
+  Font iosevka = LoadFontEx("resources/IosevkaNerdFont-Regular.ttf", 48, 0, 0);
+  Font fonts[1] = {iosevka};
+  SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
   Clay_SetMeasureTextFunction(Raylib_MeasureText, fonts);
   // ------------------------------------------------------------------
 
@@ -57,28 +62,33 @@ int main(void) {
     // Update
     // ------------------------------------------------------------------
 
-    // Restart clay if it 
     if (reinitializeClay) {
       Clay_SetMaxElementCount(8192);
       totalMemorySize = Clay_MinMemorySize();
-      clayMemory = Clay_CreateArenaWithCapacityAndMemory(totalMemorySize, malloc(totalMemorySize));
-      Clay_Initialize(clayMemory, (Clay_Dimensions) { (float)GetScreenWidth(), (float)GetScreenHeight() }, (Clay_ErrorHandler) { HandleClayErrors, 0 });
+      clayMemory = Clay_CreateArenaWithCapacityAndMemory(
+          totalMemorySize, malloc(totalMemorySize));
+      Clay_Initialize(
+          clayMemory,
+          (Clay_Dimensions){(float)GetScreenWidth(), (float)GetScreenHeight()},
+          (Clay_ErrorHandler){HandleClayErrors, 0});
       reinitializeClay = false;
     }
 
-    // Canvas
     Canvas_Update(&canvas);
+    UI_Update();
     // ------------------------------------------------------------------
 
     // Draw
     // ------------------------------------------------------------------
+    Clay_RenderCommandArray commands = UI_Draw();
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
     Canvas_Draw(&canvas);
+    Clay_Raylib_Render(commands, fonts);
 
     Vector2 mousePos = GetMousePosition();
-    DrawCircleV(mousePos, 5, GRAY);
+    DrawCircleV(mousePos, 5, THEME_SURFACE);
     EndDrawing();
     // ------------------------------------------------------------------
   }
