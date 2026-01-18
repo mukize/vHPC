@@ -70,9 +70,9 @@ void Canvas_Update(Canvas *canvas) {
 
   // Bounding target
   // ------------------------------------------------------------
-  // Vector2 center = (Vector2){GetScreenWidth() / 2.f, GetScreenHeight() / 2.f};
-  // Vector2 minTarget = Vector2Add(GRID_SIZE_MIN, center);
-  // Vector2 maxTarget = Vector2Subtract(GRID_SIZE_MAX, center);
+  // Vector2 center = (Vector2){GetScreenWidth() / 2.f, GetScreenHeight()
+  // / 2.f}; Vector2 minTarget = Vector2Add(GRID_SIZE_MIN, center); Vector2
+  // maxTarget = Vector2Subtract(GRID_SIZE_MAX, center);
   // ------------------------------------------------------------
 
   // Dragging
@@ -135,8 +135,9 @@ void Canvas_Update(Canvas *canvas) {
   //   Vector2 mouseWorldPos =
   //       GetScreenToWorld2D(GetMousePosition(), *canvas_camera);
   //   canvas_camera->offset = GetMousePosition();
-  //   canvas_camera->target = Vector2Clamp(mouseWorldPos, minTarget, maxTarget);
-  //   canvas_camera->target = Vector2Clamp(mouseWorldPos, minTarget, maxTarget);
+  //   canvas_camera->target = Vector2Clamp(mouseWorldPos, minTarget,
+  //   maxTarget); canvas_camera->target = Vector2Clamp(mouseWorldPos,
+  //   minTarget, maxTarget);
   //
   //   float scale = 0.2f * wheel;
   //   canvas_camera->zoom =

@@ -1,5 +1,5 @@
+#include "../include/app.h"
 #include "../include/canvas.h"
-#include "../include/theme.h"
 #include "../include/ui.h"
 #include <assert.h>
 #include <raylib.h>
@@ -47,12 +47,16 @@ int main(void) {
 
   // Initialize app state
   // ------------------------------------------------------------------
-  Canvas canvas = (Canvas){0};
-  Canvas_Init(&canvas);
-  Font iosevka = LoadFontEx("resources/IosevkaNerdFont-Regular.ttf", 48, 0, 0);
-  Font fonts[1] = {iosevka};
-  SetTextureFilter(fonts[0].texture, TEXTURE_FILTER_BILINEAR);
-  Clay_SetMeasureTextFunction(Raylib_MeasureText, fonts);
+  App app = (App){
+      .canvas = &(Canvas){0},
+      .fonts = &(Font){0},
+  };
+  Canvas_Init(app.canvas);
+
+  Font iosevka = LoadFontEx("resources/IosevkaNerdFont-Regular.ttf", 32, 0, 0);
+  app.fonts[APP_FONT_DEFAULT] = iosevka;
+  SetTextureFilter(app.fonts[0].texture, TEXTURE_FILTER_BILINEAR);
+  Clay_SetMeasureTextFunction(Raylib_MeasureText, app.fonts);
   // ------------------------------------------------------------------
 
   while (!WindowShouldClose()) {
@@ -72,18 +76,18 @@ int main(void) {
       reinitializeClay = false;
     }
 
-    Canvas_Update(&canvas);
+    Canvas_Update(app.canvas);
     UI_Update();
     // ------------------------------------------------------------------
 
     // Draw
     // ------------------------------------------------------------------
-    Clay_RenderCommandArray commands = UI_Draw();
+    Clay_RenderCommandArray commands = UI_Draw(&app);
     BeginDrawing();
     ClearBackground(RAYWHITE);
 
-    Canvas_Draw(&canvas);
-    Clay_Raylib_Render(commands, fonts);
+    Canvas_Draw(app.canvas);
+    Clay_Raylib_Render(commands, app.fonts);
 
     Vector2 mousePos = GetMousePosition();
     DrawCircleV(mousePos, 5, THEME_SURFACE);

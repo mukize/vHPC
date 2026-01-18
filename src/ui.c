@@ -1,5 +1,7 @@
-#include "../include/theme.h"
+#include "../include/ui.h"
+#include "../include/app.h"
 #include "../vendor/clay/clay.h"
+#include "../vendor/stb_ds.h"
 #include "raylib.h"
 #include <string.h>
 
@@ -20,13 +22,28 @@ void UI_Update(void) {
 }
 
 // clang-format off
-Clay_RenderCommandArray UI_Draw(void) {
+void LineBreakComponent() {
+ CLAY_AUTO_ID({
+   .border = {
+     .color = TO_CLAY_COLOR(THEME_TEXT),
+     .width = 1
+   },
+   .layout = {
+     .sizing = {
+       .width = CLAY_SIZING_GROW(0),
+       .height = CLAY_SIZING_FIXED(2)}
+     },
+   .backgroundColor = TO_CLAY_COLOR(THEME_TEXT),
+   .cornerRadius = CLAY_CORNER_RADIUS(25),
+  }){}
+}
+Clay_RenderCommandArray UI_Draw(const App* app) {
   Clay_BeginLayout();
   Clay_TextElementConfig* defaultRightSidebarTextConfig = CLAY_TEXT_CONFIG({
     .fontId = 0,
-    .fontSize = 24,
+    .fontSize = 16,
     .textAlignment = CLAY_TEXT_ALIGN_CENTER,
-    .textColor = THEME_TO_CLAY_COLOR(THEME_TEXT),
+    .textColor = TO_CLAY_COLOR(THEME_TEXT),
   });
   CLAY(CLAY_ID("Body"), {
     .layout = {
@@ -50,27 +67,25 @@ Clay_RenderCommandArray UI_Draw(void) {
           .childAlignment = CLAY_ALIGN_X_CENTER,
          .childGap = 8,
        },
-       .backgroundColor = THEME_TO_CLAY_COLOR(THEME_SURFACE),
+       .backgroundColor = TO_CLAY_COLOR(THEME_SURFACE),
        .cornerRadius = CLAY_CORNER_RADIUS(8),
     }) {
+      LineBreakComponent();
       CLAY_TEXT(CLAY_STRING("Debug"), defaultRightSidebarTextConfig);
-      CLAY_AUTO_ID({
-        .border = {
-          .color = THEME_TO_CLAY_COLOR(THEME_TEXT),
-          .width = 1
-        },
-        .layout = {
-          .sizing = {
-            .width = CLAY_SIZING_GROW(0),
-            .height = CLAY_SIZING_FIXED(2)}
-        },
-        .backgroundColor = THEME_TO_CLAY_COLOR(THEME_TEXT),
-        .cornerRadius = CLAY_CORNER_RADIUS(25),
-      }){}
+      LineBreakComponent();
       CLAY_TEXT(
-        ToClayString(TextFormat("%ix%i", GetScreenWidth(), GetScreenHeight())),
+        ToClayString(TextFormat("Dimensions: %ix%i", GetScreenWidth(), GetScreenHeight())),
         defaultRightSidebarTextConfig
       );
+      LineBreakComponent();
+      CLAY_TEXT(
+        ToClayString(TextFormat("Nodes", GetScreenWidth(), GetScreenHeight())),
+        defaultRightSidebarTextConfig
+      );
+      LineBreakComponent();
+      for (size_t i = 0; i < arrlen(app->canvas->nodes); i++) {
+         CLAY_TEXT(ToClayString(app->canvas->nodes[i].name), defaultRightSidebarTextConfig);
+      }
     }
   };
   return Clay_EndLayout();
