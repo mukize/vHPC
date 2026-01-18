@@ -11,7 +11,6 @@ INCLUDES = $(wildcard include/*.h)
 
 PREFIX  ?= /usr/local
 BINDIR   = $(PREFIX)/bin
-INCDIR   = $(PREFIX)/include/$(TARGET)
 
 # CFLAGS ?= -Wall -Wextra -g
 CFLAGS += -Iinclude
@@ -30,6 +29,8 @@ build:
 
 # Install/uninstall
 install: $(TARGET)
+	install -d $(DESTDIR)$(PREFIX)/resources
+	cp -r resources/* $(DESTDIR)$(PREFIX)/resources
 	install -d $(DESTDIR)$(BINDIR)
 	install -m 755 $(TARGET) $(DESTDIR)$(BINDIR)
 
