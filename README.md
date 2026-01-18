@@ -35,5 +35,5 @@ This is also a learning project for me to learn C and raylib. With that said, ve
 
 ## Bugs
 
-- Wayland, cursor coordinates not aligning with cursor when mouse down and not in full screen mode
-- Wayland (again), scaling issues....
+- ~Wayland, cursor coordinates not aligning with cursor when mouse down and not in full screen mode~ Switched to SDL
+- ~Wayland (again), scaling issues....~ Switched to raylib master
