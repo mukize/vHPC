@@ -24,7 +24,8 @@ void Node_Draw(const Node *node) {
   // Vector2 textSize = MeasureTextEx(font, node->name, fontSize, spacing);
   // Vector2 textPosition = {node->bounds.x + node->bounds.width / 2,
   //                         node->bounds.y + node->bounds.height};
-  // DrawTextPro(font, node->name, textPosition, (Vector2){textSize.x / 2.f, textSize.y / 2.f },  0, fontSize, spacing, BLACK);
+  // DrawTextPro(font, node->name, textPosition, (Vector2){textSize.x / 2.f,
+  // textSize.y / 2.f },  0, fontSize, spacing, BLACK);
 };
 
 void Node_Update(Node *node);
