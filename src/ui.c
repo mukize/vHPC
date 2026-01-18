@@ -1,6 +1,11 @@
 #include "../include/theme.h"
 #include "../vendor/clay/clay.h"
 #include "raylib.h"
+#include <string.h>
+
+static Clay_String ToClayString(const char *format) {
+  return (Clay_String){.length = strlen(format), .chars = format};
+}
 
 void UI_Update(void) {
   Vector2 mousePos = GetMousePosition();
@@ -17,6 +22,12 @@ void UI_Update(void) {
 // clang-format off
 Clay_RenderCommandArray UI_Draw(void) {
   Clay_BeginLayout();
+  Clay_TextElementConfig* defaultRightSidebarTextConfig = CLAY_TEXT_CONFIG({
+    .fontId = 0,
+    .fontSize = 24,
+    .textAlignment = CLAY_TEXT_ALIGN_CENTER,
+    .textColor = THEME_TO_CLAY_COLOR(THEME_TEXT),
+  });
   CLAY(CLAY_ID("Body"), {
     .layout = {
       .layoutDirection = CLAY_LEFT_TO_RIGHT,
@@ -35,17 +46,31 @@ Clay_RenderCommandArray UI_Draw(void) {
             .height = CLAY_SIZING_GROW(0),
             .width = CLAY_SIZING_PERCENT(0.2),
           },
-          .padding = CLAY_PADDING_ALL(32),
+          .padding = CLAY_PADDING_ALL(8),
           .childAlignment = CLAY_ALIGN_X_CENTER,
+         .childGap = 8,
        },
        .backgroundColor = THEME_TO_CLAY_COLOR(THEME_SURFACE),
        .cornerRadius = CLAY_CORNER_RADIUS(8),
     }) {
-       CLAY_TEXT(CLAY_STRING("Nodes"), CLAY_TEXT_CONFIG({
-         .fontId = 0,
-         .fontSize = 24,
-         .textColor = THEME_TO_CLAY_COLOR(THEME_TEXT),
-       }));
+      CLAY_TEXT(CLAY_STRING("Debug"), defaultRightSidebarTextConfig);
+      CLAY_AUTO_ID({
+        .border = {
+          .color = THEME_TO_CLAY_COLOR(THEME_TEXT),
+          .width = 1
+        },
+        .layout = {
+          .sizing = {
+            .width = CLAY_SIZING_GROW(0),
+            .height = CLAY_SIZING_FIXED(2)}
+        },
+        .backgroundColor = THEME_TO_CLAY_COLOR(THEME_TEXT),
+        .cornerRadius = CLAY_CORNER_RADIUS(25),
+      }){}
+      CLAY_TEXT(
+        ToClayString(TextFormat("%ix%i", GetScreenWidth(), GetScreenHeight())),
+        defaultRightSidebarTextConfig
+      );
     }
   };
   return Clay_EndLayout();
