@@ -32,7 +32,6 @@ void HandleClayErrors(Clay_ErrorData errorData) {
 // ------------------------------------------------------------------
 
 int main(void) {
-
   // Initialize clay and raylib
   // ------------------------------------------------------------------
   uint64_t totalMemorySize = Clay_MinMemorySize();
@@ -41,9 +40,8 @@ int main(void) {
   Clay_Initialize(clayMemory,
                   (Clay_Dimensions){GetScreenWidth(), GetScreenHeight()},
                   (Clay_ErrorHandler){HandleClayErrors, 0});
-  Clay_Raylib_Initialize(
-      GetScreenWidth(), GetScreenHeight(), "Clay - Raylib Renderer Example",
-      FLAG_WINDOW_RESIZABLE | FLAG_WINDOW_MAXIMIZED | FLAG_WINDOW_HIGHDPI);
+  Clay_Raylib_Initialize(GetScreenWidth(), GetScreenHeight(), "vhpc",
+                         FLAG_WINDOW_RESIZABLE);
   SetTargetFPS(60);
   // ------------------------------------------------------------------
 
