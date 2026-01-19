@@ -1,12 +1,16 @@
 #ifndef STATE_H
 #define STATE_H
 
-#include <raylib.h>
 #include "canvas.h"
+
+typedef struct UI {
+  bool isModalOpen;
+} UI;
 
 typedef struct App {
   Canvas* canvas;
   Font* fonts;
+  UI *ui;
 } App;
 
 typedef enum App_Fonts {

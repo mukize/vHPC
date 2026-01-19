@@ -50,6 +50,7 @@ int main(void) {
   App app = (App){
       .canvas = &(Canvas){0},
       .fonts = &(Font){0},
+      .ui = &(UI){0},
   };
   Canvas_Init(app.canvas);
 
@@ -78,7 +79,7 @@ int main(void) {
 
     SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     Canvas_Update(app.canvas);
-    UI_Update();
+    UI_Update(&app);
     // ------------------------------------------------------------------
 
     // Draw

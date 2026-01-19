@@ -5,7 +5,7 @@
 #include <raylib.h>
 #include "app.h"
 
-void UI_Update(void);
+void UI_Update(App *app);
 
 Clay_RenderCommandArray UI_Draw(const App *app);
 
