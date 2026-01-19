@@ -76,6 +76,7 @@ int main(void) {
       reinitializeClay = false;
     }
 
+    SetMouseCursor(MOUSE_CURSOR_DEFAULT);
     Canvas_Update(app.canvas);
     UI_Update();
     // ------------------------------------------------------------------
@@ -89,8 +90,6 @@ int main(void) {
     Canvas_Draw(app.canvas);
     Clay_Raylib_Render(commands, app.fonts);
 
-    Vector2 mousePos = GetMousePosition();
-    DrawCircleV(mousePos, 5, THEME_SURFACE);
     EndDrawing();
     // ------------------------------------------------------------------
   }
