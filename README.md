@@ -1,4 +1,6 @@
 
+On hold for a second, playing around with creating my own clay-raylib component library (need text boxes and stuff).
+
 # vHPC
 
 This project is meant to be a GUI visualization of local HPC environments based off virtual machines. 
